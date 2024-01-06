@@ -1,0 +1,54 @@
+ADDRESS_BOOK_FILE="contacts.txt"
+
+function add_entry {
+    name=$1
+    email=$2
+    echo "$name $email" >> $ADDRESS_BOOK_FILE
+}
+
+function list_entries {
+    if [[ ! -s $ADDRESS_BOOK_FILE ]]; then
+        echo "addressbook is empty"
+    else
+        cat $ADDRESS_BOOK_FILE
+    fi
+}
+
+function remove_entries {
+    name=$1
+    sed -i "/^$name/d" $ADDRESS_BOOK_FILE
+}
+
+function clear_address_book {
+    rm -f $ADDRESS_BOOK_FILE
+}
+
+function lookup_entries {
+    name=$1
+    grep "^$name" $ADDRESS_BOOK_FILE | cut -d: -f2
+}
+
+if [[ ! -f $ADDRESS_BOOK_FILE ]]; then
+    touch $ADDRESS_BOOK_FILE
+fi
+
+case $1 in
+    "new")
+        add_entry "$2" "$3"
+        ;;
+    "list")
+        list_entries
+        ;;
+    "remove")
+        remove_entries "$2"
+        ;;
+    "clear")
+        clear_address_book
+        ;;
+    "lookup")
+        lookup_entries "$2"
+        ;;
+    *)
+        echo "Invalid command. Please use one of the following commands: new, list, remove, clear, lookup."
+        ;;
+esac
